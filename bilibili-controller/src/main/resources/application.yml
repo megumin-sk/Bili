@@ -1,0 +1,27 @@
+server:
+  port: 8080
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  redis:
+    port: 6379
+    host: localhost
+    database: 2
+  application:
+    name: "clone_bilibili"
+  datasource:
+    url: jdbc:mysql://localhost:3306/easylive?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.bilibili.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印日志
+    map-underscore-to-camel-case: true

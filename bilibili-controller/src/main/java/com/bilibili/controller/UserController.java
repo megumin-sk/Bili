@@ -12,7 +12,6 @@ import java.text.ParseException;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
 public class UserController {
     @Resource
     private UserService userService;

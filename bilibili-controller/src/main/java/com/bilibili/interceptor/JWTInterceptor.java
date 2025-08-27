@@ -16,13 +16,18 @@ import java.text.ParseException;
 @Component
 @Slf4j
 public class JWTInterceptor implements HandlerInterceptor {
-    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+        // 放行所有OPTIONS请求
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         response.setContentType("application/json;charset=utf-8");
         String token = request.getHeader("token");
         if (token == null){
             log.error("token为空");
             response.getWriter().write(JSONObject.toJSONString(ResponseEnum.TOKEN_IS_NULL));
+            return false;
         }
         try {
             boolean flag = JwtUtil.verifyJwt(token);

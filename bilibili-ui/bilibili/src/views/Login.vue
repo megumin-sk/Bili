@@ -47,25 +47,30 @@ export default {
       }
     }
   },
+  computed: {
+    // 通过 computed 属性来访问 store
+    userStore() {
+      return useUserStore();
+    }
+  },
   methods:{
     async handleLogin() {
         let {data:data} = await login(this.form);
         console.log(data);
         if (data.code === 200){
           sessionStorage.setItem("token",data.data)
-          let userStore = useUserStore();
-          userStore.loginSuccess(data.data);
+          this.userStore.loginSuccess(data.data);
           this.$message.success('登录成功');
           this.$router.push('/');
         } else {
           this.$message.error(data.msg);
         }
       },
-    },
     createNew(){
       this.$router.push('/register');
     }
   }
+}
 </script>
 
 <style scoped>

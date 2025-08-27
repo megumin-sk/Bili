@@ -26,4 +26,10 @@ server.interceptors.response.use(resp=>{
         sessionStorage.removeItem("token")
         window.location.href = "/login"
     }
+    return resp;
+}, error => {
+    console.error("响应拦截器失败", error);
+    return Promise.reject(error);
 })
+
+export default server;

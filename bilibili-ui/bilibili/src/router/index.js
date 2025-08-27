@@ -51,4 +51,20 @@ const router = createRouter({
     routes
 });
 
+router.beforeEach((to,from,next)=>{
+    //定义白名单
+const whiteList = ['/login','/register','/mall','/bangumi','/hot'];
+
+const token = sessionStorage.getItem("token")
+    if (token){
+        next()
+    }else {
+        //如果没有token
+        if (whiteList.includes(to.path)){
+            next()
+        }else {
+            next('/login')
+        }
+    }
+})
 export default router;

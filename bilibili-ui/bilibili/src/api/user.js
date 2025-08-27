@@ -1,4 +1,4 @@
-import server from "./axios.js";
+import server from "../utils/request.js";
 
 export function login(data){
     return server({

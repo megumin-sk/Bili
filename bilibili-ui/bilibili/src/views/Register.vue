@@ -88,25 +88,13 @@ export default {
         return; // 阻止表单提交
       }
 
-      // 2. 准备提交给后端的数据 (移除 confirm_password)
+      // 2. 准备提交给后端的数据
       const userData = { ...this.form };
       delete userData.confirm_password;
 
       // 3. 在这里处理注册逻辑，例如调用后端 API
       console.log('准备提交的注册信息:', userData);
       alert('注册信息已在控制台打印，请连接后端接口！');
-
-      // 示例：使用 axios 发送请求
-      /*
-      axios.post('/api/register', userData)
-        .then(response => {
-          alert('注册成功！即将跳转到登录页面。');
-          this.$router.push('/login');
-        })
-        .catch(error => {
-          alert('注册失败：' + error.response.data.message);
-        });
-      */
     },
     goToLogin() {
       // 点击链接后跳转回登录页面

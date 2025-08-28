@@ -34,8 +34,8 @@ public class Knife4jConfig {
 
     private ApiInfo apiInfo(){
         return new ApiInfoBuilder()
-                .title("33班接口文档")
-                .description("java33期项目接口文档")
+                .title("接口文档")
+                .description("java项目接口文档")
                 .version("0.0.1")
                 .contact(new Contact("wang","www.wang.com","446470238@qq.com"))
                 .license("")

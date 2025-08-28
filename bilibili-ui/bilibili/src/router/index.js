@@ -16,7 +16,8 @@ const routes = [
         name: 'PersonalCenter',
         component: () => import('../views/PersonalCenter.vue'),
         children:[
-            {path: 'personHome',name:'PersonHome',component: () => import('../views/PersonHome.vue')}
+            {path: 'personHome',name:'PersonHome',component: () => import('../views/PersonHome.vue')},
+            {path: 'creation',name:'Creation',component: () => import('../views/Creation.vue')}
         ]
     },
     {

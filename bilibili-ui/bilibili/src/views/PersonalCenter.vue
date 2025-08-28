@@ -11,10 +11,15 @@
             <el-icon><User /></el-icon>
             <span>个人信息</span>
           </el-menu-item>
-          <el-menu-item index="/account/center/creation">
-            <el-icon><VideoCamera /></el-icon>
-            <span>创作中心</span>
-          </el-menu-item>
+
+          <el-sub-menu index="creation-center">
+            <template #title>
+              <el-icon><VideoCamera /></el-icon>
+              <span>创作中心</span>
+            </template>
+            <el-menu-item index="/personalCenter/creation">投稿管理</el-menu-item>
+            <el-menu-item index="/personalCenter/contentManagement">内容管理</el-menu-item>
+          </el-sub-menu>
         </el-menu>
       </el-aside>
 

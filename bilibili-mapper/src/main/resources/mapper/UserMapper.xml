@@ -17,6 +17,8 @@
         <result property="status" column="status"/>
         <result property="notice" column="notice_info"/>
     </resultMap>
+    <insert id="register">
+    </insert>
     <update id="updateUser">
         update user_info
         <set>

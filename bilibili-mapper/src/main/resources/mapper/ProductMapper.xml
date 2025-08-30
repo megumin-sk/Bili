@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bilibili.mapper.ProductMapper">
+<resultMap id="ProductDetail" type="com.bilibili.entity.Product">
+    <id property="id" column="product_id"/>
+    <result property="name" column="product_name"/>
+    <result property="price" column="product_price"/>
+    <result property="description" column="product_desc"/>
+    <result property="imgUrl" column="img_url"/>
+    <result property="storeNum" column="store_num"/>
+    <result property="publisher" column="publisher_name"/>
+    <result property="category" column="category_name"/>
+</resultMap>
+    <update id="updateProduct">
+        update product_detail
+        <set>
+            <if test="name != null">
+                product_name = #{name},
+            </if>
+            <if test="price != null">
+                product_price = #{price},
+            </if>
+            <if test="description != null">
+                product_desc = #{description},
+            </if>
+            <if test="imgUrl != null">
+                img_url = #{imgUrl},
+            </if>
+            <if test="storeNum != null">
+                store_num = #{storeNum},
+            </if>
+            <if test="publisher != null">
+                publisher_id = #{publisher},
+            </if>
+            <if test="category != null">
+                category_id = #{category},
+            </if>
+        </set>
+        where product_id = #{id}
+    </update>
+    <select id="queryAll" resultMap="ProductDetail">
+        select * from product_detail
+    </select>
+    <select id="queryById" resultMap="ProductDetail">
+        select * from product_detail
+        left join easylive.product_publisher pp on product_detail.publisher_id = pp.publisher_id
+        left join easylive.product_category pc on product_detail.category_id = pc.category_id
+        where product_id=#{id}
+    </select>
+</mapper>

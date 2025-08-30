@@ -1,7 +1,7 @@
 <template>
   <div class="mall-container">
     <div class="banner-section">
-      <el-carousel height="500px" motion-blur>
+      <el-carousel height="300px" motion-blur>
         <el-carousel-item v-for="item in bannerItems" :key="item.id">
           <img :src="item.imageUrl" class="banner-image" alt="Promotion Banner"/>
         </el-carousel-item>
@@ -11,36 +11,46 @@
     <div class="product-grid">
       <el-card v-for="product in products" :key="product.id" class="product-card" shadow="hover">
         <div class="product-image-container">
-          <img :src="product.imageUrl" class="product-image" alt="product.name"/>
+          <img :src="getUrl(product.imgUrl)" class="product-image" alt="product.name"/>
         </div>
         <div class="product-info">
           <h3 class="product-name">{{ product.name }}</h3>
           <p class="product-description">{{ product.description }}</p>
           <div class="product-footer">
             <span class="product-price">¥ {{ product.price.toFixed(2) }}</span>
-            <el-button type="primary" :color="'#fb7299'" plain round>查看详情</el-button>
+            <el-button type="primary" :color="'#fb7299'" @click="checkDetail(product.id)">预览</el-button>
+            <el-button type="primary" :color="'#fb7299'" @click="lookDetail(product.id)">查看详情</el-button>
           </div>
         </div>
       </el-card>
     </div>
+    <ProductDetail ref="detailModal" />
   </div>
 </template>
 
 <script>
 // 引入需要的图标
 import { CaretTop, CaretBottom } from '@element-plus/icons-vue';
-import renImg from '../assets/ren.png'
-import rockImg from '../assets/rock.png'
+import renImg from '../static-resources/ren.png'
+import rockImg from '../static-resources/rock.png'
+import megumin from '../static-resources/megumin2.1.jpeg'
+import {queryAllProduct} from "../api/product.js";
+import {getUrl} from "../utils/url.js";
+import ProductDetail from "../components/ProductExpress.vue";
 export default {
   name: 'Mall',
   // 注册需要用到的组件，比如图标
   components: {
     CaretTop,
-    CaretBottom
+    CaretBottom,
+    ProductDetail
   },
   // data 函数返回组件的响应式状态
   data() {
     return {
+      //控制弹窗所需的数据
+      isModalVisible: false,
+      selectedProductId: null,
       // Banner 的模拟数据
       bannerItems: [
         { id: 1, imageUrl:renImg },
@@ -49,13 +59,27 @@ export default {
 
       // 商城的模拟商品数据
       products: [
-        { id: 1, name: 'B站小电视抱枕', description: '超柔短绒毛，陪伴你的每一个夜晚', price: 88.00, imageUrl: 'https://via.placeholder.com/300x300/eee/333?text=Product+1' },
-        { id: 2, name: '2233娘 Q版手办', description: '官方正品，Q萌可爱', price: 128.00, imageUrl: 'https://via.placeholder.com/300x300/eee/333?text=Product+2' },
-      ]
+        { id: 2, name: 'megumin Q版手办', description: '官方正品，Q萌可爱', price: 128.00, imgUrl: megumin },
+      ],
     };
   },
   methods: {
-    // 未来可以在这里添加方法，例如处理排序、筛选等逻辑
+    getUrl,
+    async queryAll(){
+      let {data:data} = await queryAllProduct()
+      // console.log(data)
+      this.products = data.data
+    }
+    , checkDetail(id){
+        // this.$refs.detailModal 就是我们在模板里设置的 ref="detailModal"
+        // .open(productId) 就是调用子组件里我们自己写的 open 方法，并把商品ID传过去
+        this.$refs.detailModal.open(id);
+    }
+    ,lookDetail(id){
+      this.$router.push(`/mall/productDetail/${id}`)
+    }
+  },mounted() {
+    this.queryAll()
   }
 }
 </script>

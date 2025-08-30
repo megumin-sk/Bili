@@ -50,4 +50,15 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUser(user);
         return ResponseUtil.get(ResponseEnum.USER_UPDATE_SUCCESS);
     }
+
+    @Override
+    public ResponseUtil register(User user) {
+        user.setPassword(SecureUtil.md5(user.getPassword()));
+        Integer register = userMapper.register(user);
+        if (register == 1){
+            return ResponseUtil.get(ResponseEnum.USER_REGISTER_SUCCESS,user);
+        }else {
+            return ResponseUtil.get(ResponseEnum.USER_REGISTER_FAIL);
+        }
+    }
 }

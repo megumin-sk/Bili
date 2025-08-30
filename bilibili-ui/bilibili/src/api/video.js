@@ -1,5 +1,5 @@
 
-import request from './axios';
+import request from '../utils/axios.js';
 
 export const getVideoList = (params) => {
     return request({

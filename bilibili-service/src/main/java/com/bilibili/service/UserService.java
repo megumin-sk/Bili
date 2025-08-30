@@ -9,6 +9,6 @@ import java.text.ParseException;
 public interface UserService {
     ResponseUtil login(User user) throws JOSEException;
     ResponseUtil queryUserById(Integer id) throws ParseException;
-
     ResponseUtil updateUser(User user);
+    ResponseUtil register(User user);
 }

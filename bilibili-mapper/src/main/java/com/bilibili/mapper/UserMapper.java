@@ -6,4 +6,5 @@ public interface UserMapper {
     User login(String name);
     User queryUserById(Integer id);
     Integer updateUser(User user);
+    Integer register(User user);
 }

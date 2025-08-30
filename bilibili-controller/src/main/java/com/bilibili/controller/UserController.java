@@ -17,20 +17,30 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    //用户登录
     @PostMapping("/login")
     public ResponseUtil login(@RequestBody User user) throws JOSEException {
         return userService.login(user);
     }
 
+    //查询用户信息
     @GetMapping("/queryUserById")
     public ResponseUtil queryUserById() throws ParseException {
         Integer userId = UserContext.getUserId();
         return userService.queryUserById(userId);
     }
 
+    //修改用户信息
     @PostMapping("/updateUser")
     public ResponseUtil updateUser(@RequestBody User user) throws ParseException {
         return userService.updateUser(user);
     }
+
+    //用户注册
+    @PostMapping("/register")
+    public ResponseUtil register(@RequestBody User user) {
+        return userService.register(user);
+    }
+
 }
 

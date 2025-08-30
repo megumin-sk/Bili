@@ -2,7 +2,7 @@
   <el-container class="main-container">
     <el-header class="main-header">
       <div class="logo-area" @click="goToHome" style="cursor: pointer;">
-        <img alt="logo" src="/src/assets/ren.png" style="height: 60px; margin-right: 10px;"/>
+        <img alt="logo" src="/src/static-resources/ren.png" style="height: 50px; margin-right: 10px;"/>
         <span class="logo-text">BiliClone</span>
       </div>
       <el-menu
@@ -14,9 +14,18 @@
           active-text-color="#fb7299"
           router
       >
-        <el-menu-item index="/hot">热门视频</el-menu-item>
-        <el-menu-item index="/bangumi">番剧</el-menu-item>
-        <el-menu-item index="/mall">商城</el-menu-item>
+        <el-menu-item index="/hot">
+          <el-icon><VideoCameraFilled /></el-icon>热门视频</el-menu-item>
+        <el-menu-item index="/bangumi">
+          <el-icon><Monitor /></el-icon>番剧</el-menu-item>
+        <el-menu-item index="/mall">
+          <el-icon><Goods /></el-icon>
+          <span>商城</span>
+        </el-menu-item>
+        <el-menu-item index="/shopCar">
+          <el-icon><ShoppingCart /></el-icon>
+          <span>购物车</span>
+        </el-menu-item>
       </el-menu>
 
       <div class="search-area">
@@ -25,7 +34,7 @@
 
       <div class="user-area">
         <el-dropdown>
-          <el-avatar v-if="isLoggedIn" :src="userInfo?.avatar_url || 'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'" />
+          <el-avatar v-if="isLoggedIn" :src="userInfo?.two || Megumin" />
           <el-avatar v-else icon="el-icon-user-solid"></el-avatar>
 
           <template #dropdown>
@@ -36,7 +45,6 @@
               </template>
               <template v-else>
                 <el-dropdown-item @click="goToLogin">登录</el-dropdown-item>
-                <el-dropdown-item @click="goToRegister">注册</el-dropdown-item>
               </template>
             </el-dropdown-menu>
           </template>
@@ -47,79 +55,67 @@
     <el-main class="main-content">
       <router-view/>
     </el-main>
+
+    <LoginRegisterModal v-model:visible="isLoginModalVisible" />
+
   </el-container>
 </template>
 
 <script>
+import {Goods, Monitor, ShoppingCart, VideoCameraFilled} from '@element-plus/icons-vue';
 import { useUserStore } from "./store/user.js";
 import { ElMessage } from 'element-plus';
+import LoginRegisterModal from './components/LoginAndRegister.vue';
+import Megumin from './static-resources/megumin2.1.jpeg'
+import defult from './static-resources/2233.jpg'
 
 export default {
-  // 组件名称
   name: "App",
-
-  // 响应式数据
+  // 2. 注册组件
+  components: {
+    Goods,
+    Monitor,
+    VideoCameraFilled,
+    ShoppingCart,
+    LoginRegisterModal
+  },
   data() {
     return {
-      // activeIndex 用于导航菜单的高亮状态
-      activeIndex: this.$route.path
+      activeIndex: this.$route.path,
+      // 3. 添加控制弹窗显示的数据
+      isLoginModalVisible: false,
+      Megumin: Megumin,
+      two: defult
     };
   },
-
-  // 计算属性
   computed: {
-    // 判断用户是否登录
     isLoggedIn() {
-      // 在计算属性中调用 Pinia store
       return useUserStore().isLoggedIn;
     },
-    // 获取用户信息
     userInfo() {
       return useUserStore().userInfo;
     }
   },
-
-  // 监听器
   watch: {
-    // 监听路由对象的变化
     '$route'(to, from) {
-      // 当路由路径变化时，更新 activeIndex
       this.activeIndex = to.path;
     }
   },
-
-  // 方法
   methods: {
-    // 跳转到首页
     goToHome() {
       this.$router.push('/');
     },
-
-    // 跳转到登录页
+    // 4. 修改登录和注册方法
     goToLogin() {
-      this.$router.push('/login');
+      this.isLoginModalVisible = true;
     },
-
-    // 跳转到注册页
-    goToRegister() {
-      this.$router.push('/register');
-    },
-
-    // 跳转到个人中心
     personalCenter() {
-      console.log('跳转到个人中心，当前用户信息:', this.userInfo);
-      this.$router.push('/personalCenter'); // 直接跳转
+      this.$router.push('/personalCenter');
     },
-
-    // 处理退出登录
     handleLogout() {
-      // 调用 Pinia store中的action
       useUserStore().logout();
-      // 清除 sessionStorage 中的 token
       sessionStorage.removeItem("token");
       ElMessage.success('已退出登录');
-
-      // 如果当前不在首页，则退出后跳转回首页
       if (this.$route.path !== '/hot') {
         this.$router.push('/');
       }
@@ -129,7 +125,6 @@ export default {
 </script>
 
 <style>
-/* 样式部分保持不变 */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", "Source Han Sans SC", "Noto Sans CJK SC", "WenQuanYi Micro Hei", sans-serif;
@@ -138,15 +133,17 @@ body {
 .main-container {
   height: 100vh;
 }
+
+/* --- 这里是修改的重点 --- */
 .main-header {
   display: flex;
   align-items: center;
   background-color: #ffffff;
-  color: #333;
-  padding: 0 20px;
+  padding: 0 30px; /* 增加了左右的内边距，让内容离屏幕边缘远一点 */
   height: 60px !important;
   border-bottom: 1px solid #e3e5e7;
 }
+
 .logo-area {
   display: flex;
   align-items: center;
@@ -155,29 +152,38 @@ body {
   font-size: 20px;
   font-weight: bold;
 }
+
 .main-menu {
   border-bottom: none !important;
-  margin-left: 50px;
+  margin-left: 60px; /* 增大了Logo和菜单之间的距离 */
   height: 60px;
 }
+
 .el-menu--horizontal > .el-menu-item {
   height: 60px;
   line-height: 60px;
   font-size: 15px;
+  /* 为每个菜单项增加左右边距，让它们散开一点 */
+  padding: 0 25px;
 }
+
 .search-area {
-  flex-grow: 1;
-  max-width: 400px;
-  margin: 0 20px 0 50px;
+  flex-grow: 1; /* 这会让搜索框占据更多空间 */
+  min-width: 250px;
+  max-width: 500px;
+  /* 增加了和左右元素的距离 */
+  margin: 0 40px;
 }
+
 .user-area {
   display: flex;
   align-items: center;
-  margin-left: auto; /* 确保用户区在最右侧 */
+  margin-left: auto; /* 这会把它推到最右边 */
 }
 .user-area .el-dropdown {
   cursor: pointer;
 }
+
 .main-content {
   padding: 20px;
 }

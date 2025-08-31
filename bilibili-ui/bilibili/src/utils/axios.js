@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const server = axios.create({
     baseURL: 'http://localhost:8080', // 假设后端 API 地址前缀是 /api
-    timeout: 5000
+    timeout: 500000
 });
 
 server.interceptors.request.use(config=>{

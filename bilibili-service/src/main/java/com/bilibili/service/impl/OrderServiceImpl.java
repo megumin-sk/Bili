@@ -36,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
             item.setBuyNum(item.getBuyNum() + orderItem.getBuyNum());
             orderItem = item;
             //修改订单中的购买量
+            orderItem.setPrice(product.getPrice()*item.getBuyNum());
             orderMapper.update(orderItem);
             return ResponseUtil.get(ResponseEnum.ORDER_UPDATE_SUCCESS,orderItem);
         }
@@ -48,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
 //            productMapper.updateProduct(product);
             //设置订单信息
             orderItem.setCreateTime(new Date());
-            orderItem.setPrice(product.getPrice());
+            orderItem.setPrice(product.getPrice()*orderItem.getBuyNum());
             orderItem.setUserId(UserContext.getUserId());
             //执行添加订单
             int result = orderMapper.addOrder(orderItem);
@@ -57,6 +58,16 @@ public class OrderServiceImpl implements OrderService {
             }else {
                 return ResponseUtil.get(ResponseEnum.ORDER_ADD_FAIL);
             }
+        }
+    }
+
+    @Override
+    public ResponseUtil queryOrder() throws ParseException {
+        List<OrderItem> orderItemList = orderMapper.queryByUserId(UserContext.getUserId());
+        if (!orderItemList.isEmpty()){
+            return ResponseUtil.get(ResponseEnum.ORDER_QUERY_SUCCESS,orderItemList);
+        }else {
+            return ResponseUtil.get(ResponseEnum.ORDER_QUERY_FAIL);
         }
     }
 }

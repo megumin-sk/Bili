@@ -13,4 +13,8 @@
     <insert id="addOrderCar">
         insert into order_car(car_id, car_user_id, total_price, status, address_id) VALUES (#{carId}, #{userId}, #{totalPrice}, 0, #{addressId})
     </insert>
+    <select id="queryById" resultMap="CarMap">
+        select * from order_car
+        where car_user_id=#{userId}
+    </select>
 </mapper>

@@ -17,8 +17,9 @@ public class OrderItem implements Serializable {
     private Integer userId;
     private String productName;
     private Double price;
+    private double productPrice;
     private Date createTime;
-    private Integer status;
     private Integer buyNum;
     private Integer productId;
+    private String imgUrl;
 }

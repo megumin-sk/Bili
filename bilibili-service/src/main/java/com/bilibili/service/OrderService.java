@@ -7,4 +7,5 @@ import java.text.ParseException;
 
 public interface OrderService {
     ResponseUtil addOrder(OrderItem orderItem) throws ParseException;
+    ResponseUtil queryOrder() throws ParseException;
 }

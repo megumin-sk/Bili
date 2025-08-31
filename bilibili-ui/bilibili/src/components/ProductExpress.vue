@@ -28,10 +28,6 @@
               <span class="stock-info">库存：{{ product.storeNum }}件</span>
             </div>
 
-            <div class="action-buttons">
-              <el-button type="primary" size="large" @click="buyNow" color="#fb7299">立即购买</el-button>
-              <el-button type="danger" size="large" @click="addToCart" plain>加入购物车</el-button>
-            </div>
           </div>
         </el-col>
       </el-row>

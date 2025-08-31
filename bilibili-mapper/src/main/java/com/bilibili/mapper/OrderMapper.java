@@ -10,4 +10,5 @@ public interface OrderMapper {
     List<OrderItem> queryById(@Param("userId") Integer userId, @Param("productId") Integer productId);
     List<Integer> queryIds(@Param("userId") Integer userId);
     Integer update(OrderItem orderItem);
+    List<OrderItem> queryByUserId(Integer userId);
 }

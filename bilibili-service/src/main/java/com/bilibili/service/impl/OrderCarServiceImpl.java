@@ -10,11 +10,13 @@ import com.bilibili.service.OrderCarService;
 import com.bilibili.utils.ResponseEnum;
 import com.bilibili.utils.ResponseUtil;
 import com.bilibili.utils.UserContext;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.List;
 
+@Service("orderCarService")
 public class OrderCarServiceImpl implements OrderCarService {
     @Resource
     private OrderCarMapper orderCarMapper;
@@ -32,7 +34,7 @@ public class OrderCarServiceImpl implements OrderCarService {
             if (product.getStoreNum() < orderItem.getBuyNum()){
                 return ResponseUtil.get(ResponseEnum.PRODUCT_NOT_ENOUGH);
             }else {
-                totalPrice += orderItem.getPrice() * orderItem.getBuyNum();
+                totalPrice += orderItem.getPrice();
             }
         }
         shoppingCar.setTotalPrice(totalPrice);

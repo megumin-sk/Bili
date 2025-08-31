@@ -107,6 +107,11 @@ export default {
     async addToCart() {
       let {data:data} = await addOrder({productId:this.id,buyNum:this.quantity})
       console.log(data)
+      if(data.code===201){
+        ElMessage.success('添加购物车成功')
+      }else{
+        ElMessage.error('添加购物车失败')
+      }
     },
     buyNow() {
     }

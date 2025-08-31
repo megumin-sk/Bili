@@ -19,9 +19,9 @@
         <el-table-column label="商品信息" min-width="300">
           <template #default="{ row }">
             <div class="product-info">
-              <el-image :src="row.imageUrl" fit="cover" class="product-image" />
+              <el-image :src="row.displayImgUrl" fit="cover" class="product-image" />
               <div class="product-details">
-                <span class="product-name">{{ row.name }}</span>
+                <span class="product-name">{{ row.productName }}</span>
                 <span class="product-desc">{{ row.description }}</span>
               </div>
             </div>
@@ -29,17 +29,17 @@
         </el-table-column>
         <el-table-column label="单价" width="150" align="center">
           <template #default="{ row }">
-            <span class="price">¥{{ row.price.toFixed(2) }}</span>
+            <span class="price">¥{{ row.productPrice.toFixed(2) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="数量" width="180" align="center">
           <template #default="{ row }">
-            <el-input-number v-model="row.quantity" :min="1" :max="row.stock" size="small" />
+            <el-input-number v-model="row.buyNum" :min="1" :max="row.stock" size="small" />
           </template>
         </el-table-column>
         <el-table-column label="小计" width="150" align="center">
           <template #default="{ row }">
-            <span class="price subtotal">¥{{ (row.price * row.quantity).toFixed(2) }}</span>
+            <span class="price subtotal">¥{{ (row.productPrice * row.buyNum).toFixed(2) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="120" align="center">
@@ -84,21 +84,158 @@
 <script>
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Delete } from '@element-plus/icons-vue';
-import jojo1 from '../static-resources/jojo-空条承太郎.png';
-import jojo2 from '../static-resources/rock.png';
+import { getOrder } from "../api/order.js"; // 假设的API请求方法
+import { getUrl } from "../utils/url.js"; // 处理图片路径的工具函数
 
 export default {
   name: 'ShoppingCart',
-  data() {
+  // data() 函数返回这个组件实例的“成员变量”
+  data: function() {
     return {
-      Delete: Delete, // 将图标暴露给模板
-      cartItems: [
-        { id: 1, name: 'B站小电视抱枕', description: '超柔短绒毛，陪伴你的每一个夜晚', price: 88.00, quantity: 1, stock: 10, imageUrl: jojo2 },
-        { id: 2, name: '空条承太郎 精品手办', description: 'jojo官方正版，精品手办', price: 128.00, quantity: 2, stock: 5, imageUrl: jojo1 },
-      ],
+      Delete: Delete,
+      cartItems: [], // 购物车商品列表，初始为空，等待从服务器加载
       selectedItems: [], // 存储表格中被选中的行
+      isSelectAll: false, // 全选复选框的状态
     };
   },
+
+  // methods 对象里定义所有可以调用的“公共方法”
+  methods: {
+    /**
+     * 根据图片名称获取完整的图片URL。
+     * @param {string} imgName - 图片的文件名，例如 'product-a.png'
+     */
+    getImageFullUrl: function(imgName) {
+      return getUrl(imgName);
+    },
+
+    /**
+     * 当表格的选中项发生变化时，Element Plus UI库会自动调用这个方法
+     * @param {Array} selection - 当前所有被选中的商品对象组成的数组
+     */
+    handleSelectionChange: function(selection) {
+      this.selectedItems = selection;
+      // 手动更新“全选”复选框的状态
+      this.isSelectAll = this.cartItems.length > 0 && this.selectedItems.length === this.cartItems.length;
+    },
+
+    /**
+     * 点击“全选”复选框时触发
+     * @param {boolean} isSelected - 复选框是否被选中
+     */
+    handleSelectAll: function(isSelected) {
+      if (this.$refs.tableRef) {
+        if (isSelected) {
+          this.$refs.tableRef.toggleAllSelection();
+        } else {
+          this.$refs.tableRef.clearSelection();
+        }
+      }
+    },
+
+    /**
+     * 从购物车移除单个商品
+     * @param {number} index - 要移除的商品在 cartItems 数组中的索引
+     */
+    removeItem: function(index) {
+      this.cartItems.splice(index, 1);
+      ElMessage.success('商品已从购物车移除');
+    },
+
+    /**
+     * 移除所有选中的商品
+     */
+    removeSelectedItems: function() {
+      if (this.selectedItems.length === 0) {
+        ElMessage.warning('请先选择要删除的商品');
+        return;
+      }
+
+      ElMessageBox.confirm('确定要删除选中的商品吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(() => {
+        // 用户点击“确定”后执行
+        var newCartItems = [];
+        for (var i = 0; i < this.cartItems.length; i++) {
+          var item = this.cartItems[i];
+          if (!this.selectedItems.includes(item)) {
+            newCartItems.push(item);
+          }
+        }
+        this.cartItems = newCartItems;
+        ElMessage.success('已删除选中商品');
+      }).catch(() => {
+        // 用户点击“取消”
+      });
+    },
+
+    /**
+     * 点击结算按钮
+     */
+    handleCheckout: function() {
+      if (this.selectedItems.length === 0) {
+        ElMessage.warning('请选择要结算的商品');
+        return;
+      }
+      console.log('准备结算的商品:', this.selectedItems);
+      ElMessage.success('正在前往结算页面...');
+    },
+
+    /**
+     * 跳转到商城页面
+     */
+    goToMall: function() {
+      this.$router.push('/mall');
+    },
+
+    /**
+     * 从服务器查询所有购物车商品数据 (使用Promise.then的写法)
+     */
+    queryAll: function() {
+      var self = this; // 保存 this 的引用
+
+      getOrder().then(function(response) {
+        // API成功返回数据后
+        var originalData = response.data.data;
+
+        // 使用 for 循环处理数据，添加可直接显示的图片URL
+        var processedItems = [];
+        for (var i = 0; i < originalData.length; i++) {
+          var item = originalData[i];
+          // 添加一个新的 displayImgUrl 属性
+          item.displayImgUrl = self.getImageFullUrl(item.imgUrl);
+          processedItems.push(item);
+        }
+
+        self.cartItems = processedItems;
+
+        // 数据加载完成后，默认全选所有商品
+        self.$nextTick(function() {
+          if (self.$refs.tableRef) {
+            self.$refs.tableRef.toggleAllSelection();
+          }
+        });
+
+      }).catch(function(error) {
+        // API请求失败
+        console.error("加载购物车数据失败:", error);
+        ElMessage.error("加载购物车数据失败！");
+      });
+    }
+  },
+
+  /**
+   * Vue的“生命周期钩子”，当组件挂载到页面上时，这个函数会自动执行
+   */
+  mounted: function() {
+    this.queryAll();
+  },
+
+  /**
+   * computed (计算属性), 可以理解为带缓存的get方法，性能更好
+   */
   computed: {
     // 计算已选商品的总数
     totalSelectedItems() {
@@ -106,76 +243,13 @@ export default {
     },
     // 计算已选商品的总价
     totalPrice() {
-      return this.selectedItems.reduce((sum, item) => {
-        return sum + item.price * item.quantity;
-      }, 0);
-    },
-    // 判断是否全选
-    isSelectAll: {
-      get() {
-        return this.cartItems.length > 0 && this.selectedItems.length === this.cartItems.length;
-      },
-      set(value) {
-        this.handleSelectAll(value);
+      var total = 0;
+      for (var i = 0; i < this.selectedItems.length; i++) {
+        var item = this.selectedItems[i];
+        total += item.productPrice * item.buyNum;
       }
-    }
-  },
-  methods: {
-    // 表格选中项变化时触发
-    handleSelectionChange(selection) {
-      this.selectedItems = selection;
+      return total;
     },
-    // 全选/取消全选
-    handleSelectAll(isSelected) {
-      if (isSelected) {
-        this.$refs.tableRef.toggleAllSelection();
-      } else {
-        this.$refs.tableRef.clearSelection();
-      }
-    },
-    // 移除单个商品
-    removeItem(index) {
-      this.cartItems.splice(index, 1);
-      ElMessage.success('商品已从购物车移除');
-    },
-    // 移除所有选中的商品
-    removeSelectedItems() {
-      if (this.totalSelectedItems === 0) {
-        ElMessage.warning('请先选择要删除的商品');
-        return;
-      }
-      ElMessageBox.confirm('确定要删除选中的商品吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      }).then(() => {
-        this.cartItems = this.cartItems.filter(item => !this.selectedItems.includes(item));
-        ElMessage.success('已删除选中商品');
-      }).catch(() => { /* 用户取消操作 */ });
-    },
-    // 结算
-    handleCheckout() {
-      if (this.totalSelectedItems === 0) {
-        ElMessage.warning('请选择要结算的商品');
-        return;
-      }
-      // 在这里处理结算逻辑，例如跳转到订单确认页，并带上 selectedItems
-      console.log('准备结算的商品:', this.selectedItems);
-      ElMessage.success('正在前往结算页面...');
-      // this.$router.push({ name: 'ConfirmOrder', state: { items: this.selectedItems } });
-    },
-    // 前往商城
-    goToMall() {
-      this.$router.push('/mall');
-    }
-  },
-  mounted() {
-    // 默认全选所有商品
-    this.$nextTick(() => {
-      if (this.$refs.tableRef) {
-        this.$refs.tableRef.toggleAllSelection();
-      }
-    });
   }
 }
 </script>
@@ -244,6 +318,7 @@ export default {
   padding: 15px 20px;
   background-color: #fff;
   border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
 }
 .left-section, .right-section {
   display: flex;

@@ -7,3 +7,10 @@ export function addOrder(data){
         data
     })
 }
+
+export function getOrder(){
+    return server({
+        url: '/order/queryOrder',
+        method: 'GET',
+    })
+}

@@ -3,18 +3,22 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bilibili.mapper.OrderMapper">
-<resultMap id="OrderMap" type="com.bilibili.entity.OrderItem">
-    <id property="orderId" column="order_id"/>
-    <id property="userId" column="order_user_id"/>
-    <id property="productName" column="product_name"/>
-    <id property="buyNum" column="buy_num"/>
-    <id property="price" column="order_price"/>
-    <id property="productPrice" column="product_price"/>
-    <id property="createTime" column="order_create_time"/>
-    <id property="imgUrl" column="img_url"/>
-</resultMap>
+    <resultMap id="OrderMap" type="com.bilibili.entity.CartItem">
+        <id property="id" column="order_id"/>
+        <result property="userId" column="order_user_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="quantity" column="buy_num"/>
+        <result property="totalPrice" column="order_price"/>
+        <result property="createTime" column="order_create_time"/>
+        <!-- Joined fields -->
+        <result property="productName" column="product_name"/>
+        <result property="unitPrice" column="product_price"/>
+        <result property="imgUrl" column="img_url"/>
+        <result property="description" column="description"/>
+    </resultMap>
     <insert id="addOrder">
-        insert into order_item(order_user_id,product_id,buy_num,order_create_time,order_price) values(#{userId},#{productId},#{buyNum},#{createTime},#{price})
+        insert into order_item(order_user_id, product_id, buy_num, order_create_time, order_price)
+        values(#{userId}, #{productId}, #{quantity}, #{createTime}, #{totalPrice})
     </insert>
     <update id="update">
         update order_item
@@ -25,8 +29,8 @@
             <if test="productName != null">
                 product_name = #{productName},
             </if>
-            <if test="price != null">
-                order_price = #{price},
+            <if test="totalPrice != null">
+                order_price = #{totalPrice},
             </if>
             <if test="createTime != null">
                 order_create_time = #{createTime},
@@ -34,11 +38,11 @@
             <if test="status != null">
                 status = #{status},
             </if>
-            <if test="buyNum != null">
-                buy_num = #{buyNum},
+            <if test="quantity != null">
+                buy_num = #{quantity},
             </if>
         </set>
-        where order_id = #{orderId}
+        where order_id = #{id}
     </update>
     <select id="queryById" resultMap="OrderMap">
         select * from order_item
@@ -49,8 +53,19 @@
         where order_user_id=#{userId}
     </select>
     <select id="queryByUserId" resultMap="OrderMap">
-        select * from order_item
+        select 
+            order_item.order_id,
+            order_item.order_user_id,
+            order_item.product_id,
+            order_item.buy_num,
+            order_item.order_price,
+            order_item.order_create_time,
+            pd.product_name,
+            pd.product_price,
+            pd.img_url,
+            pd.product_desc
+        from order_item
         left join easylive.product_detail pd on order_item.product_id = pd.product_id
-        where order_user_id= #{userId}
+        where order_item.order_user_id = #{userId}
     </select>
 </mapper>

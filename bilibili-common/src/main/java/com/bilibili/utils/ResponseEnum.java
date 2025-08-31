@@ -29,7 +29,10 @@ public enum ResponseEnum {
     ORDER_QUERY_FAIL(400, "查询订单失败"),
     ORDER_UPDATE_SUCCESS(201, "更新订单成功"),
     ORDER_UPDATE_FAIL(400, "更新订单失败"),
-    ORDER_DELETE_SUCCESS(201, "删除订单成功");
+    ORDER_DELETE_SUCCESS(201, "删除订单成功"),
+    //地址模块
+    ADDRESS_QUERY_SUCCESS(201, "查询全部地址成功"),
+    ADDRESS_QUERY_FAIL(400, "地址为空");
 
     private Integer code;
     private String msg;

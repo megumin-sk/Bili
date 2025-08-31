@@ -73,7 +73,7 @@ export default {
         // 使用解构赋值获取返回的数据
         let { data: res } = await login(this.loginForm);
         if (res.code === 200) {
-          sessionStorage.setItem("token", res.data);
+          sessionStorage.setItem("token", res.data.token);
           // 使用Pinia store
           useUserStore().loginSuccess(res.data);
           ElMessage.success('登录成功！');
@@ -128,6 +128,8 @@ export default {
         this.registerForm[key] = '';
       });
     }
+  },mounted() {
+    const userStore = useUserStore();
   }
 }
 </script>

@@ -65,7 +65,7 @@
 import { ElMessage } from 'element-plus';
 import {queryById} from "../api/product.js";
 import {getUrl} from "../utils/url.js";
-import {addOrder} from "../api/order.js";
+import {addToCart} from "../api/cart.js";
 
 export default {
   name: 'ProductDetail',
@@ -105,7 +105,7 @@ export default {
       console.log('数量变为:', value);
     },
     async addToCart() {
-      let {data:data} = await addOrder({productId:this.id,buyNum:this.quantity})
+      let {data:data} = await addToCart({productId:this.id,quantity:this.quantity})
       console.log(data)
       if(data.code===201){
         ElMessage.success('添加购物车成功')

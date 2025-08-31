@@ -22,7 +22,7 @@
           <el-icon><Goods /></el-icon>
           <span>商城</span>
         </el-menu-item>
-        <el-menu-item index="/shopCar">
+        <el-menu-item @click="goToShopCar">
           <el-icon><ShoppingCart /></el-icon>
           <span>购物车</span>
         </el-menu-item>
@@ -34,7 +34,7 @@
 
       <div class="user-area">
         <el-dropdown>
-          <el-avatar v-if="isLoggedIn" :src="userInfo?.two || Megumin" />
+          <el-avatar v-if="isLoggedIn" :src="getUrl(userInfo.imgUrl) || two" />
           <el-avatar v-else icon="el-icon-user-solid"></el-avatar>
 
           <template #dropdown>
@@ -68,6 +68,7 @@ import { ElMessage } from 'element-plus';
 import LoginRegisterModal from './components/LoginAndRegister.vue';
 import Megumin from './static-resources/megumin2.1.jpeg'
 import defult from './static-resources/2233.jpg'
+import {getUrl} from "./utils/url.js";
 
 export default {
   name: "App",
@@ -102,6 +103,7 @@ export default {
     }
   },
   methods: {
+    getUrl,
     goToHome() {
       this.$router.push('/');
     },
@@ -119,7 +121,20 @@ export default {
       if (this.$route.path !== '/hot') {
         this.$router.push('/');
       }
+    },
+    goToShopCar() {
+      // 检查sessionStorage中是否有token
+      const token = sessionStorage.getItem('token');
+      if (token) {
+        // 如果有token，跳转到购物车页面
+        console.log('跳转到购物车页面');
+        this.$router.push('/shopCar');
+      } else {
+        // 如果没有token，弹出登录界面
+        this.isLoginModalVisible = true;
+      }
     }
+  },mounted() {
   }
 }
 </script>

@@ -7,6 +7,7 @@
         <id property="id" column="user_id"/>
         <result property="name" column="nick_name"/>
         <result property="password" column="password"/>
+        <result property="imgUrl" column="img_url"/>
         <result property="sex" column="sex"/>
         <result property="birthday" column="birthday"/>
         <result property="school" column="school"/>
@@ -55,11 +56,14 @@
             <if test="joinTime != null">
                 join_time = #{joinTime},
             </if>
+            <if test="imgUrl != null">
+                img_url = #{imgUrl},
+            </if>
         </set>
         where user_id = #{id}
     </update>
     <select id="login" resultMap="UserMap">
-        select user_id,password from user_info
+        select user_id,password,img_url from user_info
         where nick_name = #{name}
     </select>
     <select id="queryUserById" resultMap="UserMap">

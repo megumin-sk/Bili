@@ -18,6 +18,7 @@ public class User implements Serializable {
     private String name;
     private String email;
     private String password;
+    private String imgUrl;
     //0是女 1是男 2是不透露性别
     private Integer sex;
     private Date birthday;

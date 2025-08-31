@@ -6,17 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShoppingCar implements Serializable {
-    private String carId;
-    private Integer userId;
-    private Double totalPrice;
-    private Integer status;
+public class Address implements Serializable {
     private Integer addressId;
-    private List<Integer> ids;
+    private String addressName;
+    private String nickName;
+    private Integer userId;
+    private String comment;
 }
